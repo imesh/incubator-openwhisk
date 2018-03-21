@@ -15,6 +15,10 @@ ENV JRE_HOME ${JAVA_HOME}/jre
 ENV PATH $JAVA_HOME/bin:$PATH
 
 
+# https://github.com/anapsix/docker-alpine-java/issues/18#issue-167437838
+# If default values in ${JAVA_HOME}/jre/lib/security/java.security need to be changed,
+# values in 042-set-jvm-ttl.sh would also need to be changed
+
 RUN apk upgrade --update && \
     apk add --update libstdc++ curl ca-certificates bash sed && \
     update-ca-certificates && \
@@ -61,8 +65,6 @@ RUN apk upgrade --update && \
            "$JAVA_HOME"/jre/lib/plugin.jar \
            /tmp/* /var/cache/apk/* && \
     echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' >> /etc/nsswitch.conf && \
-    # https://github.com/anapsix/docker-alpine-java/issues/18#issue-167437838
-    # If you want to change the default values here, also change the values in 042-set-jvm-ttl.sh
     sed -i s/#networkaddress.cache.ttl=-1/networkaddress.cache.ttl=10/ ${JAVA_HOME}/jre/lib/security/java.security && \
     sed -i s/networkaddress.cache.negative.ttl=10/networkaddress.cache.negative.ttl=0/ ${JAVA_HOME}/jre/lib/security/java.security
 
